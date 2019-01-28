@@ -1,6 +1,5 @@
 parseCases = fmap (fmap read .  words)
-saveThePrisoner [n, m, s] = if x == 0 then n else x
-  where x = ((s - 1) + m) `mod` n
+saveThePrisoner [n, m, s] = 1 + (((s - 2) + m) `mod` n)
 
 main = do
   _ <- getLine
