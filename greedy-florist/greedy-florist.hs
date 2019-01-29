@@ -9,6 +9,5 @@ minimumCost k m c = t + minimumCost k m' c'
     t = sum $ (* m) <$> take k c
 
 main = do
-  [_, k] <- fmap read . words <$> getLine
-  c <- fmap read . words <$> getLine
+  _:k:c <- fmap read . words <$> getContents
   print $ minimumCost k 1 $ sortBy (flip compare) c
