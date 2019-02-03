@@ -1,21 +1,18 @@
 import Data.List.Split
 
-type TestCase = (Int, [Int])
-
-fromLines :: [String] -> TestCase
-fromLines [t, b] = (k, times)
+fromLines [t, b] = (k, a)
   where
     [_, k] = read <$> words t
-    times = read <$> words b
+    a = read <$> words b
 
-angryProfessor :: TestCase -> Bool
-angryProfessor (k, arr) = length (filter (<=0) arr) < k
+countNegatives = length . filter (> 0)
+
+angryProfessor (k, a) = countNegatives a < k
 
 output True = "YES"
 output False = "NO"
 
 main = do
   _ <- getLine
-  ls <- lines <$> getContents
-  let testCases = fromLines <$> chunksOf 2 ls
+  testCases <- fmap fromLines . chunksOf 2 . lines <$> getContents
   putStr . unlines $ output . angryProfessor <$> testCases
