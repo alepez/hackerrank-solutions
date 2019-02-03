@@ -5,9 +5,7 @@ fromLines [t, b] = (k, a)
     [_, k] = read <$> words t
     a = read <$> words b
 
-countNegatives = length . filter (> 0)
-
-angryProfessor (k, a) = countNegatives a < k
+angryProfessor (k, a) = k /= (length . take k $ filter (> 0) a)
 
 output True = "YES"
 output False = "NO"
