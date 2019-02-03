@@ -1,9 +1,9 @@
 import Data.List.Split
+import Data.List (intercalate)
 
-fromLines [t, b] = (k, a)
+fromLines lines = (k, a)
   where
-    [_, k] = read <$> words t
-    a = read <$> words b
+    _:k:a = read <$> words (intercalate " " lines)
 
 angryProfessor (k, a) = k /= (length . take k $ filter (> 0) a)
 
