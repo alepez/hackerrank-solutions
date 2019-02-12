@@ -1,5 +1,4 @@
 input.txt
 output.txt
-*.hs
 *.hi
 *.exe
