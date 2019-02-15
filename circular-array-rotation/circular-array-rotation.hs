@@ -8,4 +8,4 @@ main = do
   [_, k, _] <- fmap read . words <$> getLine
   a <- fmap read . words <$> getLine
   ms <- fmap read . lines <$> getContents
-  putStr $ unlines . fmap show $ circularArrayRotation a k ms
+  putStr . unlines $ show <$> circularArrayRotation a k ms
