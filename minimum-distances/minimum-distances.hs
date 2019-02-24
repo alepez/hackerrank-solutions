@@ -1,19 +1,19 @@
-import Data.List (groupBy, sort)
+import Data.List (groupBy, sortBy)
 import Data.Function (on)
+import Data.Ord (comparing)
+
+safeMinimum [] = -1
+safeMinimum xs = minimum xs
+
+diffAdjacent xs = zipWith (-) (tail xs) xs
 
 minDistance :: [Int] -> Int
-minDistance a =
-  case ms of
-    [] -> -1
-    xs -> minimum xs
-  where
-    diff g = zipWith (-) (tail g) g
-    ms = fmap minimum
-       . filter (not . null)
-       . fmap (diff . fmap snd)
-       . groupBy ((==) `on` fst)
-       . sort
-       $ zip a [0..]
+minDistance = safeMinimum
+            . concatMap diffAdjacent
+            . (fmap . fmap) fst
+            . groupBy ((==) `on` snd)
+            . sortBy (comparing snd)
+            . zip [0..]
 
 main = do
   _:a <- fmap read . words <$> getContents
