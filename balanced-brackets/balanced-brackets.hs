@@ -1,11 +1,9 @@
+import Control.Monad (foldM)
+
 isBalanced :: String -> Bool
-isBalanced xs =
-  case foldl go (Just []) xs of
-    Nothing -> False
-    Just r -> null r
+isBalanced xs = maybe False null $ foldM go [] xs
   where
-    go Nothing _ = Nothing
-    go (Just s) v
+    go s v
       | v `elem` "{[(" = Just (v : s)
       | null s = Nothing
       | match (head s) v = Just (tail s)
