@@ -16,6 +16,4 @@ isBalanced xs = maybe False null $ foldM go [] xs
 yesNo True = "YES"
 yesNo False = "NO"
 
-main = do
-  _:xs <- lines <$> getContents :: IO [String]
-  putStr . unlines $ fmap (yesNo . isBalanced) xs
+main = interact $ unlines . fmap (yesNo . isBalanced) . tail . lines
