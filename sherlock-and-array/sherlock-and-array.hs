@@ -1,19 +1,19 @@
-import Data.List.Split
+import Data.List.Split (chunksOf)
 
-numbers :: String -> [Int]
-numbers b = read <$> words b
-
-balancedSum [_] = True
-balancedSum arr = found
+doSomething :: [Int] -> Bool
+doSomething [_] = True
+doSomething arr = any match $ zip prefixSum $ tail prefixSum
   where
-    (found, _, _) = foldl go (False, 0, sum $ tail arr) (zip arr $ tail arr)
-    go (True, _, _) _ = (True, 0, 0)
-    go (_, l, r) (v, w) = (l == r, l + v, r - w)
+    match (v, v') = v' == s - v
+    prefixSum = scanl1 (+) (0 : arr)
+    s = last prefixSum
 
-output True = "YES"
-output False = "NO"
+yesNo True = "YES"
+yesNo False = "NO"
 
-main = do
-  _ <- getLine
-  testCases <- fmap (numbers . last) . chunksOf 2 . lines <$> getContents
-  putStr . unlines $ output . balancedSum <$> testCases
+main =
+  getContents >>=
+  putStr .
+  unlines .
+  fmap (yesNo . doSomething . fmap read . words . snd) .
+  filter fst . zip (concat $ repeat [False, True]) . tail . lines
