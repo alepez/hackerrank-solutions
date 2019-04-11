@@ -1,5 +1,5 @@
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 int main() {
   int n;
@@ -11,19 +11,18 @@ int main() {
   memset(f, 0, sizeof(f));
 
   for (int i = 0; i != n; ++i) {
-    int e[26];
-    memset(e, 0, sizeof(e));
+    int e = 0;
 
     /* Read all the string once, flag character when found */
     while (1) {
       c = getchar();
       if (c == '\n' || c == EOF) break;
-      e[c - 'a'] |= 1;
+      e |= (1 << (c - 'a'));
     }
 
     /* Increment count of each found character */
     for (int i = 0; i != 26; ++i) {
-      f[i] += e[i];
+      f[i] += (e & (1 << i)) ? 1 : 0;
     }
   }
 
