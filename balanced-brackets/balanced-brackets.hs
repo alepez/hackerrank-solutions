@@ -1,17 +1,11 @@
-import Control.Monad (foldM)
+import Control.Monad (mfilter)
+
+replace a b = map $ maybe b id . mfilter (/= a) . Just
+
+replaceBrackets xs = replaceBrackets $ replace "[]" "" $ replace "()" "" $ replace "{}" "" $ xs
 
 isBalanced :: String -> Bool
-isBalanced xs = maybe False null $ foldM go [] xs
-  where
-    go s v
-      | v `elem` "{[(" = Just (v : s)
-      | null s = Nothing
-      | match (head s) v = Just (tail s)
-      | otherwise = Nothing
-    match '{' '}' = True
-    match '[' ']' = True
-    match '(' ')' = True
-    match _ _ = False
+isBalanced xs = not . null $ isBalanced $ 
 
 yesNo True = "YES"
 yesNo False = "NO"
