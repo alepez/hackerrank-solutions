@@ -1,15 +1,13 @@
-isPalindrome xs = xs == (reverse xs)
+isPalindrome xs = xs == reverse xs
 
-recPalIndex n i (x:xs) (y:ys) =
+recPalIndex _ _ [] [] = -1
+recPalIndex j i (x:xs) (y:ys) =
   if x == y
-    then recPalIndex n (i + 1) xs ys
-    else (if isPalindrome ((take i $ reverse $ ys) ++ xs)
-            then i
-            else n - i - 1)
+    then recPalIndex (j - 1) (i + 1) xs ys
+    else if isPalindrome ((take i $ reverse $ ys) ++ xs)
+           then i
+           else j
 
-palindromeIndex xs =
-  if isPalindrome xs
-    then -1
-    else recPalIndex (length xs) 0 xs (reverse xs)
+palindromeIndex xs = recPalIndex (length xs - 1) 0 xs (reverse xs)
 
 main = interact $ unlines . fmap (show . palindromeIndex) . tail . lines
