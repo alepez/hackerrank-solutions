@@ -5,7 +5,7 @@ fromLines lines = (k, a)
   where
     _:k:a = read <$> words (intercalate " " lines)
 
-angryProfessor (k, a) = k /= (length . take k $ filter (> 0) a)
+angryProfessor (k, a) = k /= (length . take k $ filter (<= 0) a)
 
 output True = "YES"
 output False = "NO"
