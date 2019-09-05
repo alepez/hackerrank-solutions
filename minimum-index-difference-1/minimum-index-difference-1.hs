@@ -2,12 +2,11 @@ import Data.Function (on)
 import Data.List (minimumBy, sortOn, zipWith)
 
 minIndexDiff :: [[Int]] -> Int
-minIndexDiff [xs, ys] = fst (minimumBy (compare `on` snd) diffs)
+minIndexDiff lists = fst (minimumBy (compare `on` snd) diffs)
   where
     enumerateAndSort ls = sortOn fst (zip ls [0 ..])
-    xs' = enumerateAndSort xs
-    ys' = enumerateAndSort ys
-    diffs = zipWith (\(x, i) (_, j) -> (x, abs (i - j))) xs' ys'
+    [xs, ys] = fmap enumerateAndSort lists
+    diffs = zipWith (\(x, i) (_, j) -> (x, abs (i - j))) xs ys
 
 main =
   interact
