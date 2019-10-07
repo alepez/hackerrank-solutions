@@ -10,6 +10,18 @@ fn compare_triplets(a: &[u32], b: &[u32]) -> (u32, u32) {
         })
 }
 
+fn parse_line<T>(lines: &mut T) -> Vec<u32>
+where
+    T: Iterator<Item = String>,
+{
+    lines
+        .next()
+        .unwrap()
+        .split(' ')
+        .map(|x| x.parse().unwrap())
+        .collect()
+}
+
 fn main() {
     use std::io::{self, BufRead};
 
@@ -17,19 +29,8 @@ fn main() {
 
     let mut lines = stdin.lock().lines().map(Result::unwrap);
 
-    let a: Vec<u32> = lines
-        .next()
-        .unwrap()
-        .split(' ')
-        .map(|x| x.parse().unwrap())
-        .collect();
-
-    let b: Vec<u32> = lines
-        .next()
-        .unwrap()
-        .split(' ')
-        .map(|x| x.parse().unwrap())
-        .collect();
+    let a = parse_line(&mut lines);
+    let b = parse_line(&mut lines);
 
     let (a, b) = compare_triplets(&a, &b);
 
