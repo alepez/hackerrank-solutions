@@ -1,5 +1,5 @@
 fn reduce_string(s: String) -> String {
-    s.chars().fold(String::new(), |mut acc, c| {
+    let reduced = s.chars().fold(String::new(), |mut acc, c| {
         match acc.pop() {
             None => acc.push(c),
             Some(l) => {
@@ -11,7 +11,13 @@ fn reduce_string(s: String) -> String {
         };
 
         acc
-    })
+    });
+
+    if reduced != s {
+        reduce_string(reduced)
+    } else {
+        reduced
+    }
 }
 
 fn main() {
