@@ -19,8 +19,8 @@ fn roman_number(mut n: u32) -> String {
 
     let mut txt = String::new();
 
-    for (d, s) in TABLE.iter() {
-        while n >= *d {
+    for &(d, s) in TABLE.iter() {
+        while n >= d {
             n -= d;
             txt.push_str(s);
         }
