@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use std::error::Error;
 use std::io::BufRead;
 
-fn minimum_loss<T: IntoIterator<Item = u64>>(prices: T) -> u64 {
+fn minimum_loss<T: Iterator<Item = u64>>(prices: T) -> u64 {
     let mut set = BTreeSet::new();
 
     let mut min_loss = std::u64::MAX;
