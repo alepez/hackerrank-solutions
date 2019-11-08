@@ -1,7 +1,11 @@
 use std::io;
+use std::io::Read;
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    println!("{}", 1 + input.chars().filter(|&x| x.is_uppercase()).count());
+    println!(
+        "{}",
+        io::stdin()
+            .bytes()
+            .fold(0, |acc, b| acc + ((!b.unwrap() & 0x20) >> 5))
+    );
 }
