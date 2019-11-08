@@ -2,10 +2,10 @@ use std::cmp::min;
 use std::error::Error;
 use std::io::{self, BufRead};
 
-fn minimum_loss(prices: Vec<u32>) -> u32 {
+fn minimum_loss(prices: Vec<u64>) -> u64 {
     println!("{:?}", prices);
 
-    let mut min_loss = std::u32::MAX;
+    let mut min_loss = std::u64::MAX;
 
     for i in prices.iter() {
         for j in prices.iter().skip(1) {
@@ -20,7 +20,7 @@ fn minimum_loss(prices: Vec<u32>) -> u32 {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let stdin = io::stdin();
-    let prices: Vec<u32> = stdin
+    let prices: Vec<u64> = stdin
         .lock()
         .lines()
         .skip(1)
