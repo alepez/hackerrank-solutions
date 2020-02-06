@@ -3,8 +3,9 @@ fn solve(c: i32, p: i32) -> i32 {
 
     [20, 50, 100, 200, 500, 1000]
         .iter()
+        .skip_while(|&&denom| denom < diff)
         .take_while(|&&denom| denom <= diff + 9)
-        .find(|&&denom| denom >= diff)
+        .next()
         .map(|&denom| denom - diff)
         .unwrap_or(-1)
 }

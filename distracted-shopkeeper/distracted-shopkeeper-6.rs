@@ -1,20 +1,12 @@
 fn solve(c: i32, p: i32) -> i32 {
     let diff = p - c;
 
-    let mut result = -1;
-
-    for &denom in &[20, 50, 100, 200, 500, 1000] {
-        if denom > diff + 9 {
-            break;
-        }
-
-        if diff <= denom {
-            result = denom - diff;
-            break;
-        }
-    }
-
-    result
+    [20, 50, 100, 200, 500, 1000]
+        .iter()
+        .take_while(|&&denom| denom <= diff + 9)
+        .find(|&&denom| denom >= diff)
+        .map(|&denom| denom - diff)
+        .unwrap_or(-1)
 }
 
 fn main() {
@@ -36,3 +28,4 @@ fn main() {
             println!("{}", result);
         });
 }
+
