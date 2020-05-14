@@ -120,7 +120,7 @@ impl std::fmt::Display for DateTime {
             (self.millisecond as f64) / 1000.0;
         write!(
             f,
-            "{:04}-{:02}-{:02} {:02}:{:02}:{:02.3}",
+            "{:04}-{:02}-{:02} {:02}:{:02}:{:06.3}",
             self.year,
             self.month,
             self.day,
@@ -154,10 +154,10 @@ enum Entry {
     Get(Timestamp),
 }
 
-impl TryFrom<String> for Entry {
+impl TryFrom<&str> for Entry {
     type Error = ();
 
-    fn try_from(s: String) -> Result<Self, Self::Error> {
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
         match s.chars().next() {
             Some('R') => Ok(Entry::Reference(
                 Reference::from(&s[2..]),
@@ -191,11 +191,11 @@ fn carry_over_day(
         } else {
             break;
         }
-    }
 
-    if m > 12 {
-        m -= 12;
-        y += 1;
+        if m > 12 {
+            m -= 12;
+            y += 1;
+        }
     }
 
     (y, m, d)
@@ -231,7 +231,7 @@ fn main() {
     let lines = stdin.lock().lines().map(Result::unwrap);
 
     let entries: Vec<_> = lines
-        .filter_map(|line| Entry::try_from(line).ok())
+        .filter_map(|line| Entry::try_from(line.as_ref()).ok())
         .collect();
 
     run(entries);
@@ -246,7 +246,7 @@ mod tests {
         let dt = DateTime::parse_from_str(
             "2020-05-14 12:00:00.000",
         )
-        .unwrap();
+            .unwrap();
         assert_eq!(dt.day, 14);
         assert_eq!(dt.hour, 12);
         let dt1 = dt.add_milliseconds(MS_IN_DAY);
@@ -259,7 +259,7 @@ mod tests {
         let dt = DateTime::parse_from_str(
             "2020-05-14 12:00:00.000",
         )
-        .unwrap();
+            .unwrap();
         assert_eq!(dt.month, 5);
         assert_eq!(dt.day, 14);
         assert_eq!(dt.hour, 12);
@@ -274,7 +274,7 @@ mod tests {
         let dt = DateTime::parse_from_str(
             "2020-05-14 12:00:00.000",
         )
-        .unwrap();
+            .unwrap();
         assert_eq!(dt.month, 5);
         assert_eq!(dt.day, 14);
         assert_eq!(dt.hour, 12);
@@ -282,5 +282,28 @@ mod tests {
         assert_eq!(dt1.month, 5);
         assert_eq!(dt1.day, 14);
         assert_eq!(dt1.hour, 13);
+    }
+
+    #[test]
+    fn date_time_new_year() {
+        let reference = Reference {
+            dt: DateTime {
+                year: 2019,
+                month: 10,
+                day: 29,
+                hour: 16,
+                minute: 17,
+                millisecond: 13777,
+            },
+            t: 1572365832000,
+        };
+
+        let t = 1580458588000;
+
+        let t = reference.dt.add_milliseconds(t - reference.t);
+
+        assert_eq!(t.year, 2020);
+        assert_eq!(t.month, 1);
+        assert_eq!(t.day, 31);
     }
 }
