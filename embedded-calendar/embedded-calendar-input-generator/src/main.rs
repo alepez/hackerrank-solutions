@@ -58,7 +58,7 @@ fn run(entries: Vec<Entry>) {
                     let diff = (timestamp as i64) - (reference.t as i64);
                     let diff = chrono::Duration::milliseconds(diff);
                     let dt = reference.dt.checked_add_signed(diff).unwrap();
-                    println!("{}", dt);
+                    println!("{}", dt.format("%Y-%m-%d %H:%M:%S.%3f").to_string());
                 } else {
                     println!("-");
                 }
