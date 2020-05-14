@@ -78,8 +78,11 @@ impl DateTime {
         }
 
         if day_offset > 0 {
-            let (y, m, d) =
-                carry_over_day(year, month, day + day_offset);
+            let (y, m, d) = carry_over_day(
+                year,
+                month,
+                day + day_offset,
+            );
             year = y;
             month = m;
             day = d;
@@ -210,11 +213,12 @@ fn run(entries: Vec<Entry>) {
                 reference = Some(r);
             }
             Entry::Get(t) => {
-                if let Some(reference) = &reference {
-                    let diff = t - reference.t;
-                    let dt =
-                        reference.dt.add_milliseconds(diff);
+                if let Some(r) = &reference {
+                    let diff = t - r.t;
+                    let dt = r.dt.add_milliseconds(diff);
                     println!("{}", dt);
+
+                    reference = Some(Reference { dt, t });
                 } else {
                     println!("-");
                 }
@@ -231,7 +235,9 @@ fn main() {
     let lines = stdin.lock().lines().map(Result::unwrap);
 
     let entries: Vec<_> = lines
-        .filter_map(|line| Entry::try_from(line.as_ref()).ok())
+        .filter_map(|line| {
+            Entry::try_from(line.as_ref()).ok()
+        })
         .collect();
 
     run(entries);
@@ -246,7 +252,7 @@ mod tests {
         let dt = DateTime::parse_from_str(
             "2020-05-14 12:00:00.000",
         )
-            .unwrap();
+        .unwrap();
         assert_eq!(dt.day, 14);
         assert_eq!(dt.hour, 12);
         let dt1 = dt.add_milliseconds(MS_IN_DAY);
@@ -259,7 +265,7 @@ mod tests {
         let dt = DateTime::parse_from_str(
             "2020-05-14 12:00:00.000",
         )
-            .unwrap();
+        .unwrap();
         assert_eq!(dt.month, 5);
         assert_eq!(dt.day, 14);
         assert_eq!(dt.hour, 12);
@@ -274,7 +280,7 @@ mod tests {
         let dt = DateTime::parse_from_str(
             "2020-05-14 12:00:00.000",
         )
-            .unwrap();
+        .unwrap();
         assert_eq!(dt.month, 5);
         assert_eq!(dt.day, 14);
         assert_eq!(dt.hour, 12);
@@ -300,7 +306,8 @@ mod tests {
 
         let t = 1580458588000;
 
-        let t = reference.dt.add_milliseconds(t - reference.t);
+        let t =
+            reference.dt.add_milliseconds(t - reference.t);
 
         assert_eq!(t.year, 2020);
         assert_eq!(t.month, 1);
