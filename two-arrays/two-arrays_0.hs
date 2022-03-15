@@ -1,6 +1,6 @@
 import Data.List
 
-main = interact $ ser . compute . de
+main = interact $ ser . fmap compute . de
 
 de :: String -> [(Int, [Int], [Int])]
 de s = fmap readGroup $ groupN 3 $ drop 1 $ lines s
@@ -22,9 +22,6 @@ readGroup lines = (k, as, bs)
     as = fmap read $ words $ head $ drop 1 $ lines
     bs = fmap read $ words $ head $ drop 2 $ lines
 
-compute :: [(Int, [Int], [Int])] -> [Bool]
-compute = fmap computeGroup
-
-computeGroup :: (Int, [Int], [Int]) -> Bool
-computeGroup (k, as, bs) =
+compute :: (Int, [Int], [Int]) -> Bool
+compute (k, as, bs) =
   all (>= k) $ zipWith (+) (sort as) (reverse $ sort bs)
