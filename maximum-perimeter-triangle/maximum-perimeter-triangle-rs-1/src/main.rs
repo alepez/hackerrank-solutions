@@ -1,11 +1,13 @@
-pub struct Triangle {
+use std::io::StdinLock;
+
+struct Triangle {
     a: usize,
     b: usize,
     c: usize,
 }
-pub struct Sticks(Vec<usize>);
+struct Sticks(Vec<usize>);
 
-pub fn solve(sticks: Sticks) -> Option<Triangle> {
+fn solve(sticks: Sticks) -> Option<Triangle> {
     let mut v = sticks.0;
 
     // Sort in descending order (in place)
@@ -18,34 +20,39 @@ pub fn solve(sticks: Sticks) -> Option<Triangle> {
         .find(|t| t.b + t.c > t.a)
 }
 
-fn read_input() -> Sticks {
-    use std::io::BufRead;
-
-    let stdin = std::io::stdin();
-    let stdin = stdin.lock();
-    let lines = stdin.lines();
-
-    let v = lines
-        .skip(1)
-        .next()
-        .unwrap()
-        .unwrap()
-        .split_whitespace()
-        .filter_map(|x| x.parse().ok())
-        .collect();
-
-    Sticks(v)
+impl std::fmt::Display for Triangle {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{} {} {}", self.c, self.b, self.a)
+    }
 }
 
-fn print_output(triangle: Triangle) {
-    print!("{} {} {}", triangle.c, triangle.b, triangle.a);
+impl From<StdinLock<'_>> for Sticks {
+    fn from(stdin: StdinLock) -> Self {
+        use std::io::BufRead;
+
+        let lines = stdin.lines();
+
+        let v = lines
+            .skip(1)
+            .next()
+            .unwrap()
+            .unwrap()
+            .split_whitespace()
+            .filter_map(|x| x.parse().ok())
+            .collect();
+
+        Sticks(v)
+    }
 }
 
 fn main() {
-    let sticks = read_input();
+    let sticks = std::io::stdin().lock().into();
 
     if let Some(triangle) = solve(sticks) {
-        print_output(triangle);
+        print!("{}", triangle);
     } else {
         print!("-1");
     }
