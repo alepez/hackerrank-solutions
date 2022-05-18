@@ -1,10 +1,9 @@
-use std::io::StdinLock;
-
 struct Triangle {
     a: usize,
     b: usize,
     c: usize,
 }
+
 struct Sticks(Vec<usize>);
 
 fn solve(sticks: Sticks) -> Option<Triangle> {
@@ -29,13 +28,10 @@ impl std::fmt::Display for Triangle {
     }
 }
 
-impl From<StdinLock<'_>> for Sticks {
-    fn from(stdin: StdinLock) -> Self {
-        use std::io::BufRead;
-
-        let lines = stdin.lines();
-
-        let v = lines
+impl<T: std::io::BufRead> From<T> for Sticks {
+    fn from(input: T) -> Self {
+        let v = input
+            .lines()
             .skip(1)
             .next()
             .unwrap()
