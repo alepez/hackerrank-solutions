@@ -1,28 +1,21 @@
-struct Triangle {
+pub struct Triangle {
     a: usize,
     b: usize,
     c: usize,
 }
+pub struct Sticks(Vec<usize>);
 
-struct Sticks(Vec<usize>);
+pub fn solve(sticks: Sticks) -> Option<Triangle> {
+    let mut v = sticks.0;
 
-fn solve(mut sticks: Sticks) -> Option<Triangle> {
-    // Sort in descending order
-    sticks.0.sort_by(|a, b| b.cmp(a));
+    // Sort in descending order (in place)
+    v.sort_by(|a, b| b.cmp(a));
 
-    for i in 2..sticks.0.len() {
-        let t = Triangle {
-            a: sticks.0[i],
-            b: sticks.0[i - 1],
-            c: sticks.0[i - 2],
-        };
-
-        if t.b + t.c > t.a {
-            return Some(t);
-        }
-    }
-
-    None
+    v.iter()
+        .zip(v.iter().skip(1))
+        .zip(v.iter().skip(2))
+        .map(|((&a, &b), &c)| Triangle { a, b, c })
+        .find(|t| t.b + t.c > t.a)
 }
 
 fn read_input() -> Sticks {
@@ -45,7 +38,7 @@ fn read_input() -> Sticks {
 }
 
 fn print_output(triangle: Triangle) {
-    print!("{} {} {}", triangle.a, triangle.b, triangle.c);
+    print!("{} {} {}", triangle.c, triangle.b, triangle.a);
 }
 
 fn main() {
