@@ -2,3 +2,6 @@ input.txt
 output.txt
 *.hi
 *.exe
+*.o
+target
+*.txt
