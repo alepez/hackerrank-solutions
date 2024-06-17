@@ -39,28 +39,6 @@ fn solve(a: &[usize], b: &[usize]) -> usize {
     }
 }
 
-pub fn beautiful_pairs(a: &[usize], b: &[usize]) -> usize {
-    let mut beautiful_count = 0;
-    let mut freq_table = [0; 1001];
-
-    for xb in b {
-        freq_table[*xb] += 1;
-    }
-
-    for xa in a {
-        if freq_table[*xa] > 0 {
-            freq_table[*xa] -= 1;
-            beautiful_count += 1;
-        }
-    }
-
-    if beautiful_count == a.len() {
-        beautiful_count - 1
-    } else {
-        beautiful_count + 1
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
