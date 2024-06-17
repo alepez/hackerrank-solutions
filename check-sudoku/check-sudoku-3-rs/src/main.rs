@@ -1,27 +1,12 @@
 fn main() {
-    use std::io::{self, Read};
-    let stdin = io::stdin();
-    let mut stdin = stdin.lock();
-    let mut s = String::new();
-    stdin.read_to_string(&mut s).unwrap();
-    let items = Items::from(s.as_str());
-    let matrix = Matrix::from(items);
+    let stdin = std::io::stdin();
+    let matrix = Matrix::from(stdin.lock());
     if matrix.is_valid() {
         println!("OK");
     } else {
         println!("WRONG INPUT");
     }
 }
-
-#[derive(Debug, PartialEq, Eq)]
-struct Item {
-    row: usize,
-    col: usize,
-    val: usize,
-}
-
-#[derive(Debug, PartialEq, Eq)]
-struct Items(Vec<Item>);
 
 struct Matrix([usize; 81]);
 
@@ -31,39 +16,40 @@ impl Default for Matrix {
     }
 }
 
-impl From<Items> for Matrix {
-    fn from(items: Items) -> Self {
+impl<T> From<T> for Matrix
+where
+    T: std::io::Read + std::io::BufRead,
+{
+    fn from(r: T) -> Self {
         let mut matrix = Matrix::default();
-        for Item { row, col, val } in items.0 {
+        r.lines().skip(1).for_each(|line| {
+            let line = line.unwrap();
+            let mut parts = line.split_whitespace();
+            let row: usize = parts.next().unwrap().parse().unwrap();
+            let col: usize = parts.next().unwrap().parse().unwrap();
+            let val: usize = parts.next().unwrap().parse().unwrap();
             let index = (row - 1) * 9 + (col - 1);
             matrix.0[index] = val;
-        }
+        });
         matrix
     }
 }
 
-fn has_duplicates(v: Vec<usize>) -> bool {
+fn has_duplicates(v: &[usize]) -> bool {
     let mut table: [usize; 10] = [0; 10];
-    for &x in &v {
+    for &x in v {
         table[x] += 1;
     }
     // Skip the first, contains count of zeroes, which must be ignored
     table.iter().skip(1).find(|&&f| f > 1).is_some()
 }
 
-fn _has_duplicates(mut v: Vec<usize>) -> bool {
-    let len = v.iter().filter(|&&x| x != 0).count();
-    v.sort();
-    v.dedup();
-    v.iter().filter(|&&x| x != 0).count() != len
-}
-
 impl Matrix {
     fn is_valid(&self) -> bool {
         for i in 1..=9 {
-            if has_duplicates(self.row(i))
-                || has_duplicates(self.col(i))
-                || has_duplicates(self.subgrid(i))
+            if has_duplicates(&self.row(i))
+                || has_duplicates(&self.col(i))
+                || has_duplicates(&self.subgrid(i))
             {
                 return false;
             }
@@ -72,51 +58,39 @@ impl Matrix {
         true
     }
 
-    fn row(&self, r: usize) -> Vec<usize> {
+    fn row(&self, r: usize) -> [usize; 9] {
         let r = r - 1;
-        let b = (r) * 9;
+        let b = r * 9;
         let e = b + 9;
-        self.0[b..e].into()
+        self.0[b..e].try_into().unwrap()
     }
 
-    fn col(&self, c: usize) -> Vec<usize> {
+    fn col(&self, c: usize) -> [usize; 9] {
+        let mut arr = [0; 9];
         let c = c - 1;
-        self.0
-            .iter()
-            .enumerate()
-            .filter(|(i, _)| (i % 9) == c)
-            .map(|(_, &v)| v)
-            .collect()
+        let mut j = 0;
+        for (i, &v) in self.0.iter().enumerate() {
+            if (i % 9) == c {
+                arr[j] = v;
+                j += 1;
+            }
+        }
+        arr
     }
 
-    fn subgrid(&self, i: usize) -> Vec<usize> {
+    fn subgrid(&self, i: usize) -> [usize; 9] {
+        let mut arr = [0; 9];
         let i = i - 1;
         let r = i / 3;
         let c = i % 3;
-        let mut v = vec![];
+        let mut j = 0;
         for row in r * 3..r * 3 + 3 {
             for col in c * 3..c * 3 + 3 {
-                v.push(self.0[(row * 9) + col]);
+                arr[j] = self.0[(row * 9) + col];
+                j += 1;
             }
         }
-        v
-    }
-}
-
-impl From<&str> for Items {
-    fn from(txt: &str) -> Self {
-        let v = txt
-            .lines()
-            .skip(1)
-            .map(|line| {
-                let mut parts = line.split_whitespace();
-                let row = parts.next().unwrap().parse().unwrap();
-                let col = parts.next().unwrap().parse().unwrap();
-                let val = parts.next().unwrap().parse().unwrap();
-                Item { row, col, val }
-            })
-            .collect();
-        Self(v)
+        arr
     }
 }
 
@@ -125,66 +99,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_parse() {
-        let items = Items(vec![
-            Item {
-                row: 2,
-                col: 2,
-                val: 5,
-            },
-            Item {
-                row: 2,
-                col: 5,
-                val: 1,
-            },
-            Item {
-                row: 5,
-                col: 2,
-                val: 3,
-            },
-            Item {
-                row: 2,
-                col: 8,
-                val: 5,
-            },
-        ]);
-
+    fn solve_a() {
         let txt = r#"4
 2 2 5
 2 5 1
 5 2 3
 2 8 5
 "#;
-
-        assert_eq!(items, Items::from(txt));
-    }
-
-    #[test]
-    fn solve_a() {
-        let items = Items(vec![
-            Item {
-                row: 2,
-                col: 2,
-                val: 5,
-            },
-            Item {
-                row: 2,
-                col: 5,
-                val: 1,
-            },
-            Item {
-                row: 5,
-                col: 2,
-                val: 3,
-            },
-            Item {
-                row: 2,
-                col: 8,
-                val: 5,
-            },
-        ]);
-
-        assert_eq!(false, Matrix::from(items).is_valid());
+        assert_eq!(false, Matrix::from(txt.as_bytes()).is_valid());
     }
 
     #[test]
@@ -200,18 +122,16 @@ mod tests {
 8 6 3
 9 9 3"#;
 
-        assert_eq!(true, Matrix::from(Items::from(txt)).is_valid());
+        assert_eq!(true, Matrix::from(txt.as_bytes()).is_valid());
     }
 
     #[test]
     fn test_row_and_col() {
-        let items = Items(vec![Item {
-            row: 2,
-            col: 9,
-            val: 5,
-        }]);
+        let txt = r#"1
+2 9 5
+"#;
 
-        let matrix = Matrix::from(items);
+        let matrix = Matrix::from(txt.as_bytes());
 
         assert_eq!(vec![0, 0, 0, 0, 0, 0, 0, 0, 0], matrix.row(1));
         assert_eq!(vec![0, 0, 0, 0, 0, 0, 0, 0, 5], matrix.row(2));
@@ -224,10 +144,10 @@ mod tests {
 
     #[test]
     fn test_duplicates() {
-        assert!(!has_duplicates(vec![0, 2, 0]));
-        assert!(!has_duplicates(vec![1, 2, 3]));
-        assert!(!has_duplicates(vec![1, 2, 3, 4, 5, 6, 7, 8, 9]));
-        assert!(has_duplicates(vec![1, 2, 3, 4, 5, 6, 7, 8, 1]));
-        assert!(has_duplicates(vec![1, 0, 0, 0, 0, 6, 7, 8, 1]));
+        assert!(!has_duplicates(&vec![0, 2, 0]));
+        assert!(!has_duplicates(&vec![1, 2, 3]));
+        assert!(!has_duplicates(&vec![1, 2, 3, 4, 5, 6, 7, 8, 9]));
+        assert!(has_duplicates(&vec![1, 2, 3, 4, 5, 6, 7, 8, 1]));
+        assert!(has_duplicates(&vec![1, 0, 0, 0, 0, 6, 7, 8, 1]));
     }
 }
