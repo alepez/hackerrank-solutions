@@ -40,8 +40,8 @@ fn has_duplicates(v: &[usize]) -> bool {
     for &x in v {
         table[x] += 1;
     }
-    // Skip the first, contains count of zeroes, which must be ignored
-    table.iter().skip(1).find(|&&f| f > 1).is_some()
+    // Skip the first, which must be ignored because it contains count of zeroes
+    table.iter().skip(1).any(|&f| f > 1)
 }
 
 impl Matrix {
